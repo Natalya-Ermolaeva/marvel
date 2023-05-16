@@ -7,7 +7,6 @@ import './app.scss';
 
 import vision from '../../resources/img/vision.png';
 
-
 const App = () => {
     return (
         <div className="app">
