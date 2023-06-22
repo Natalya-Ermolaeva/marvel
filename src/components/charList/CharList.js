@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 
 import PropTypes from 'prop-types';
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
@@ -9,27 +9,20 @@ import './charList.scss';
 
 const CharList = (props) =>  {
     const [charList, setCharList] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
     const [newItemLoading, setNewItemLoading] = useState(false);
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
 
-    const marvelService = new MarvelService();
+    const {loading, error, getAllCharacters} = useMarvelService();
 
     useEffect(() => {
-        request();
+        request(true);
     }, [])
 
-    const request = () => {
-        charListLoading();
-        marvelService.getAllCaracters(offset)
+    const request = (initial) => {
+        initial ? setNewItemLoading(false) : setNewItemLoading(true);
+        getAllCharacters(offset)
             .then(charListLoaded)
-            .catch(onError);
-    }
-
-    const charListLoading = () => {
-        setNewItemLoading(true);
     }
 
     const charListLoaded = (newCharList) => {
@@ -39,15 +32,9 @@ const CharList = (props) =>  {
         }
 
         setCharList((charList) => [...charList, ...newCharList]);
-        setLoading(false);
         setNewItemLoading(false);
         setOffset((offset) => offset + 9);
         setCharEnded(ended);
-    }
-
-    const onError = () => {
-        setLoading(false);
-        setError(true);
     }
 
     const itemRefs = useRef([]);
@@ -90,10 +77,9 @@ const CharList = (props) =>  {
         )
     }
  
-   
-    const spinner = loading ? <Spinner/> : null;
+    const spinner = loading && !setNewItemLoading ? <Spinner/> : null;
     const errorMessage = error ? <ErrorMessage/> : null;
-    const content = !(loading || error) ? renderCharItems(charList) : null;
+    const content = renderCharItems(charList);
 
     return (
         <div className="char__list">

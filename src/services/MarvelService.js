@@ -1,38 +1,34 @@
-class MarvelService {
-    _apiBase = 'https://gateway.marvel.com:443/v1/public/';
-    _apiKey = 'apikey=e50e5a006476754f94526affa67330d3';
+import useHttp from '../hooks/http.hook';
 
-    getResource = async (url) => {
-        const res = await fetch(url);
+const useMarvelService = () => {
+    const _apiBase = 'https://gateway.marvel.com:443/v1/public/';
+    const _apiKey = 'apikey=e50e5a006476754f94526affa67330d3';
 
-        if (!res.ok) {
-            throw new Error(`Could not fetch ${url}, status: ${res.status}`);
-        }
+    const {loading, error, request, clearError} = useHttp();
 
-        return await res.json();
+    const getAllCharacters = async (offset) => {
+       const res = await request(`${_apiBase}characters?limit=9&offset=${offset}&${_apiKey}`);
+       return res.data.results.map(_transformChar);
     }
 
-    getAllCaracters = async (offset) => {
-       const res = await this.getResource(`${this._apiBase}characters?limit=9&offset=${offset}&${this._apiKey}`);
-       return res.data.results.map(this._transformChar);
-    }
-
-    getCaracter = async (id) => {
-        const res = await this.getResource(`${this._apiBase}characters/${id}?${this._apiKey}`);
-        return this._transformChar(res.data.results[0]);
+    const getCharacter = async (id) => {
+        const res = await request(`${_apiBase}characters/${id}?${_apiKey}`);
+        return _transformChar(res.data.results[0]);
      }
 
-    _transformChar = (char) => {
+    const _transformChar = (char) => {
         return {
             id: char.id,
             name: char.name,
-            description: char.description ? `${char.description.slice(0, 225)}...` : 'There is no description for this character',
+            description: char.description ? `${char.description.slice(0, 210)}...` : 'There is no description for this character',
             thumbnail: char.thumbnail.path + '.' + char.thumbnail.extension,
             homepage: char.urls[0].url,
             wiki: char.urls[1].url, 
             comics: char.comics.items
         }
     }
+
+    return {loading, error, clearError, getAllCharacters, getCharacter};
 }
 
-export default MarvelService;
+export default useMarvelService;
