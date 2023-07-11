@@ -16,10 +16,10 @@ const CharList = (props) =>  {
     const {loading, error, getAllCharacters} = useMarvelService();
 
     useEffect(() => {
-        request(true);
+        request(offset, true);
     }, [])
 
-    const request = (initial) => {
+    const request = (offset, initial) => {
         initial ? setNewItemLoading(false) : setNewItemLoading(true);
         getAllCharacters(offset)
             .then(charListLoaded)
@@ -47,7 +47,7 @@ const CharList = (props) =>  {
   
     const renderCharItems = (charList) => {
         const items = charList.map(({id, name, thumbnail}, i) => {
-            const imgStyle = (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') ? {objectFit: "contain"} : {objectFit: "cover"};
+            const imgStyle = (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') ? {objectFit: "fill"} : {objectFit: "cover"};
     
             return (
                 <li className="char__item"
@@ -89,7 +89,7 @@ const CharList = (props) =>  {
             <button className="button button_main button_long"
                 disabled={newItemLoading}
                 style={{'display': charEnded ? 'none' : 'block'}}
-                onClick={request}>
+                onClick={() => request(offset)}>
                 <div className="inner">load more</div>
             </button>
         </div>

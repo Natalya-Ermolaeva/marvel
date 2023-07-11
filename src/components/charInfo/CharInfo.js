@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 import useMarvelService from '../../services/MarvelService';
@@ -51,7 +52,7 @@ const CharInfo = (props) => {
 
 const ViewCharInfo = ({char}) => {
     const {name, description, thumbnail, homepage, wiki, comics} = char;
-    const imgStyle = (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') ? {objectFit: "contain"} : {objectFit: "cover"};
+    const imgStyle = (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') ? {objectFit: "fill"} : {objectFit: "cover"};
 
     return (
         <>
@@ -80,9 +81,11 @@ const ViewCharInfo = ({char}) => {
                     // eslint-disable-next-line
                     if (i > 9) return;
                     return (
-                        <li key={i} className="char__comics-item">
-                            {item.name}
-                        </li>
+                        <Link to={`/comics/${item.resourceURI.slice(item.resourceURI.lastIndexOf('/') + 1)}`} style={{'display': 'block'}}>
+                            <li key={i} className="char__comics-item">
+                                {item.name}
+                            </li>
+                        </Link>
                     )
                 })}
             </ul>
